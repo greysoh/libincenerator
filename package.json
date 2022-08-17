@@ -1,0 +1,14 @@
+{
+  "name": "libincenerator",
+  "version": "0.1.0",
+  "description": "ws-like library for the incenerator proxy",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "@greysoh <greysoh at protonmail dot ch>",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "ws": "^8.8.1"
+  }
+}
