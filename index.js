@@ -24,6 +24,31 @@ module.exports = class LibIncenerator {
     if (!this.config.disableAutostart) this.init();
   }
 
+  connectionClass() {
+    // Stupid fix to get our class data
+    function sendData(data) {
+      this.socket.send(data);
+    }
+
+    return class Socket {
+      constructor(uuid) {
+        this.uuid = uuid;
+      }
+
+      send(data) {
+        const bufferData = Buffer.isBuffer(data) ? data : Buffer.from(data);
+        const hexString = bufferData.toString("hex");
+
+
+        sendData(JSON.stringify({
+          "type": "data_response",
+          "uuid": this.uuid,
+          "data": hexString
+        }));
+      }
+    }
+  }
+
   init() {
     // Connect to server
     this.socket = new WebSocket(this.config.host);
@@ -44,12 +69,20 @@ module.exports = class LibIncenerator {
           const json = JSON.parse(strData);
 
           if (json.type == "connection") {
-            console.log("recv connection");
+            
           } else if (json.type == "message") {
             this.broadcasts.push(json);
           }
         }
       });
     });
+  }
+
+  on(event, callback) {
+    if (!this.eventListeners[event]) {
+      this.eventListeners[event] = [];
+    }
+
+    this.eventListeners[event].push(callback);
   }
 }
