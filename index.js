@@ -18,7 +18,7 @@ module.exports = class LibIncenerator {
 
     this.broadcasts = [];
     this.eventListeners = {
-      "start": []
+      "connection": []
     }
 
     if (!this.config.disableAutostart) this.init();
@@ -29,7 +29,7 @@ module.exports = class LibIncenerator {
       constructor(uuid) {
         this.uuid = uuid;
         this.eventListeners = {
-          "connection": []
+          "message": []
         };
 
         this.internalRecv();
@@ -121,7 +121,7 @@ module.exports = class LibIncenerator {
     if (typeof callback != "function") {
       throw new Error("Callback is not a function");
     }
-
+    
     if (!this.eventListeners[event]) {
       throw new Error("Event does not exist");
     }
