@@ -24,27 +24,64 @@ module.exports = class LibIncenerator {
     if (!this.config.disableAutostart) this.init();
   }
 
-  connectionClass() {
-    // Stupid fix to get our class data
-    function sendData(data) {
-      this.socket.send(data);
-    }
-
+  connectionClass(socket, broadcasts) {
     return class Socket {
       constructor(uuid) {
         this.uuid = uuid;
+        this.eventListeners = {
+          "message": []
+        };
+
+        this.internalRecv();
       }
 
       send(data) {
         const bufferData = Buffer.isBuffer(data) ? data : Buffer.from(data);
         const hexString = bufferData.toString("hex");
 
-
-        sendData(JSON.stringify({
+        socket.send(JSON.stringify({
           "type": "data_response",
           "uuid": this.uuid,
           "data": hexString
         }));
+      }
+
+      async internalRecv() {
+        function sleep(ms) {
+          return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        while (true) {
+          for (const i of broadcasts) {
+            if (!i) continue;
+            
+            if (i.type == "data" && i.UUID == this.uuid) {
+              const localCopy = JSON.parse(JSON.stringify(i));
+
+              delete broadcasts[broadcasts.indexOf(i)];
+
+              try {
+                this.eventListeners["message"].forEach(i => i(Buffer.from(localCopy.data, "hex")));
+              } catch (e) {
+                console.error(e);
+              }
+            }
+          }
+
+          await sleep(10);
+        }
+      }
+
+      on(event, callback) {
+        if (typeof callback != "function") {
+          throw new Error("Callback is not a function");
+        }
+
+        if (!this.eventListeners[event]) {
+          throw new Error("Event does not exist");
+        }
+
+        this.eventListeners[event].push(callback);
       }
     }
   }
@@ -60,7 +97,7 @@ module.exports = class LibIncenerator {
         const strData = data.toString();
 
         if (strData.startsWith("AcceptResponse Bearer")) {
-          const bool = strData.split(":")[1] == "true";
+          const bool = strData.split(":")[1].trim() == "true";
 
           if (!bool) {
             throw new Error("Password is incorrect");
@@ -69,8 +106,10 @@ module.exports = class LibIncenerator {
           const json = JSON.parse(strData);
 
           if (json.type == "connection") {
-            
-          } else if (json.type == "message") {
+            const connectionClass = this.connectionClass(this.socket, this.broadcasts);
+            const socket = new connectionClass(json.uuid);
+            this.eventListeners["connection"].forEach(i => i(socket));
+          } else if (json.type == "data") {
             this.broadcasts.push(json);
           }
         }
