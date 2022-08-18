@@ -118,8 +118,12 @@ module.exports = class LibIncenerator {
   }
 
   on(event, callback) {
+    if (typeof callback != "function") {
+      throw new Error("Callback is not a function");
+    }
+    
     if (!this.eventListeners[event]) {
-      this.eventListeners[event] = [];
+      throw new Error("Event does not exist");
     }
 
     this.eventListeners[event].push(callback);
