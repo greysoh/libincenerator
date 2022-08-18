@@ -1,4 +1,4 @@
-const Incenerate = require("./index.js");
+const Incenerate = require("../index.js");
 
 async function main() {
   const incenerate = new Incenerate({
