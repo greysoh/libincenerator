@@ -1,5 +1,5 @@
 {
-  "name": "libincenerator",
+  "name": "@creamy-dev/libincenerator",
   "version": "0.1.0",
   "description": "ws-like library for the incenerator proxy",
   "main": "index.js",
@@ -10,5 +10,14 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "ws": "^8.8.1"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/greysoh/libincenerator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/greysoh/libincenerator/issues"
+  },
+  "homepage": "https://github.com/greysoh/libincenerator#readme"
 }
