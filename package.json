@@ -1,6 +1,6 @@
 {
   "name": "@creamy-dev/libincenerator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "ws-like library for the incenerator proxy",
   "main": "index.js",
   "scripts": {
