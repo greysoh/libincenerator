@@ -44,14 +44,11 @@ module.exports = class LibIncenerator {
 
           if (json.type == "connection") {
             const ws = new WebSocket(`${this.config.host}/trident/${json.id}/${this.config.password}`);
+            const eventListeners = this.eventListeners; // I don't know what I need to do this :/
 
-            while (true) {
-              if (ws.readyState == WebSocket.OPEN) {
-                return this.eventListeners["connection"].forEach(i => i(ws));
-              }
-
-              await new Promise(i => setTimeout(i, 10));
-            }
+            ws.on("open", async function() {
+              return eventListeners["connection"].forEach(i => i(ws));
+            });  
           }
         }
       });
