@@ -40,6 +40,12 @@ module.exports = class LibIncenerator {
             throw new Error("Password is incorrect");
           }
         } else {
+          try {
+            JSON.parse(strData);
+          } catch (e) {
+            throw "Server sent unexpected data!";
+          }
+          
           const json = JSON.parse(strData);
 
           if (json.type == "connection") {
